@@ -53,6 +53,12 @@ export default function Inventory() {
         price: Number(data.price),
         stock: Number(data.stock),
       };
+
+      // Validate numbers before submission
+      if (isNaN(formattedData.price) || isNaN(formattedData.stock)) {
+        throw new Error("Invalid number format for price or stock");
+      }
+
       const res = await apiRequest("POST", "/api/products", formattedData);
       return res.json();
     },
@@ -151,9 +157,13 @@ export default function Inventory() {
                     <Input
                       id="price"
                       type="number"
+                      min="0"
                       step="0.01"
                       placeholder="0.00"
-                      {...form.register("price", { valueAsNumber: true })}
+                      {...form.register("price", { 
+                        valueAsNumber: true,
+                        setValueAs: (value) => Number(parseFloat(value).toFixed(2))
+                      })}
                     />
                     {form.formState.errors.price && (
                       <p className="text-sm text-red-500">
@@ -167,8 +177,13 @@ export default function Inventory() {
                     <Input
                       id="stock"
                       type="number"
+                      min="0"
+                      step="1"
                       placeholder="0"
-                      {...form.register("stock", { valueAsNumber: true })}
+                      {...form.register("stock", { 
+                        valueAsNumber: true,
+                        setValueAs: (value) => Math.floor(Number(value))
+                      })}
                     />
                     {form.formState.errors.stock && (
                       <p className="text-sm text-red-500">
