@@ -49,7 +49,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 export const insertCustomerSchema = createInsertSchema(customers);
-export const insertProductSchema = createInsertSchema(products);
+export const insertProductSchema = createInsertSchema(products).extend({
+  price: z.string(),
+  stock: z.string()
+});
 export const insertOrderSchema = createInsertSchema(orders);
 export const insertOrderItemSchema = createInsertSchema(orderItems);
 
