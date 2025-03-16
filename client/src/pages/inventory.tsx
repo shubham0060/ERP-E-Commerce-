@@ -41,18 +41,17 @@ export default function Inventory() {
       name: "",
       sku: "",
       description: "",
-      price: "",
-      stock: "0",
+      price: 0,
+      stock: 0,
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Convert string values to appropriate types
       const formattedData = {
         ...data,
-        price: parseFloat(data.price),
-        stock: parseInt(data.stock, 10),
+        price: Number(data.price),
+        stock: Number(data.stock),
       };
       const res = await apiRequest("POST", "/api/products", formattedData);
       return res.json();
@@ -154,7 +153,7 @@ export default function Inventory() {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      {...form.register("price")}
+                      {...form.register("price", { valueAsNumber: true })}
                     />
                     {form.formState.errors.price && (
                       <p className="text-sm text-red-500">
@@ -169,7 +168,7 @@ export default function Inventory() {
                       id="stock"
                       type="number"
                       placeholder="0"
-                      {...form.register("stock")}
+                      {...form.register("stock", { valueAsNumber: true })}
                     />
                     {form.formState.errors.stock && (
                       <p className="text-sm text-red-500">
