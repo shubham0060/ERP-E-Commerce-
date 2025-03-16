@@ -41,25 +41,14 @@ export default function Inventory() {
       name: "",
       sku: "",
       description: "",
-      price: 0,
-      stock: 0,
+      price: "",
+      stock: "",
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const formattedData = {
-        ...data,
-        price: Number(data.price),
-        stock: Number(data.stock),
-      };
-
-      // Validate numbers before submission
-      if (isNaN(formattedData.price) || isNaN(formattedData.stock)) {
-        throw new Error("Invalid number format for price or stock");
-      }
-
-      const res = await apiRequest("POST", "/api/products", formattedData);
+      const res = await apiRequest("POST", "/api/products", data);
       return res.json();
     },
     onSuccess: () => {
@@ -160,9 +149,7 @@ export default function Inventory() {
                       min="0"
                       step="0.01"
                       placeholder="0.00"
-                      {...form.register("price", { 
-                        valueAsNumber: true 
-                      })}
+                      {...form.register("price")}
                     />
                     {form.formState.errors.price && (
                       <p className="text-sm text-red-500">
@@ -179,9 +166,7 @@ export default function Inventory() {
                       min="0"
                       step="1"
                       placeholder="0"
-                      {...form.register("stock", { 
-                        valueAsNumber: true
-                      })}
+                      {...form.register("stock")}
                     />
                     {form.formState.errors.stock && (
                       <p className="text-sm text-red-500">
