@@ -24,28 +24,51 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Search } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 
 export default function Inventory() {
   const [search, setSearch] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-  
+
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
   const form = useForm({
     resolver: zodResolver(insertProductSchema),
+    defaultValues: {
+      name: "",
+      sku: "",
+      description: "",
+      price: "",
+      stock: "0",
+    },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: Product) => {
-      const res = await apiRequest("POST", "/api/products", data);
+    mutationFn: async (data: any) => {
+      // Convert string values to appropriate types
+      const formattedData = {
+        ...data,
+        price: parseFloat(data.price),
+        stock: parseInt(data.stock, 10),
+      };
+      const res = await apiRequest("POST", "/api/products", formattedData);
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       toast({ title: "Product created successfully" });
       form.reset();
+      setIsDialogOpen(false);
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: "Failed to create product", 
+        description: error.message,
+        variant: "destructive"
+      });
     },
   });
 
@@ -66,8 +89,8 @@ export default function Inventory() {
                 Manage your products and stock levels
               </p>
             </div>
-            
-            <Dialog>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
@@ -83,36 +106,78 @@ export default function Inventory() {
                   className="space-y-4"
                 >
                   <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
                     <Input
-                      placeholder="Name"
+                      id="name"
+                      placeholder="Product name"
                       {...form.register("name")}
-                      error={form.formState.errors.name?.message}
                     />
+                    {form.formState.errors.name && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.name.message}
+                      </p>
+                    )}
                   </div>
+
                   <div className="space-y-2">
+                    <Label htmlFor="sku">SKU</Label>
                     <Input
-                      placeholder="SKU"
+                      id="sku"
+                      placeholder="Product SKU"
                       {...form.register("sku")}
-                      error={form.formState.errors.sku?.message}
                     />
+                    {form.formState.errors.sku && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.sku.message}
+                      </p>
+                    )}
                   </div>
+
                   <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
                     <Input
-                      placeholder="Price"
+                      id="description"
+                      placeholder="Product description"
+                      {...form.register("description")}
+                    />
+                    {form.formState.errors.description && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.description.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Price</Label>
+                    <Input
+                      id="price"
                       type="number"
                       step="0.01"
+                      placeholder="0.00"
                       {...form.register("price")}
-                      error={form.formState.errors.price?.message}
                     />
+                    {form.formState.errors.price && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.price.message}
+                      </p>
+                    )}
                   </div>
+
                   <div className="space-y-2">
+                    <Label htmlFor="stock">Stock</Label>
                     <Input
-                      placeholder="Stock"
+                      id="stock"
                       type="number"
+                      placeholder="0"
                       {...form.register("stock")}
-                      error={form.formState.errors.stock?.message}
                     />
+                    {form.formState.errors.stock && (
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.stock.message}
+                      </p>
+                    )}
                   </div>
+
                   <Button
                     type="submit"
                     className="w-full"
@@ -148,6 +213,7 @@ export default function Inventory() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>SKU</TableHead>
+                  <TableHead>Description</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
                 </TableRow>
@@ -157,10 +223,18 @@ export default function Inventory() {
                   <TableRow key={product.id}>
                     <TableCell>{product.name}</TableCell>
                     <TableCell>{product.sku}</TableCell>
+                    <TableCell>{product.description}</TableCell>
                     <TableCell>${product.price}</TableCell>
                     <TableCell>{product.stock}</TableCell>
                   </TableRow>
                 ))}
+                {filteredProducts.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      No products found
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           )}
