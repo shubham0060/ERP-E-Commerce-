@@ -161,8 +161,7 @@ export default function Inventory() {
                       step="0.01"
                       placeholder="0.00"
                       {...form.register("price", { 
-                        valueAsNumber: true,
-                        setValueAs: (value) => Number(parseFloat(value).toFixed(2))
+                        valueAsNumber: true 
                       })}
                     />
                     {form.formState.errors.price && (
@@ -181,8 +180,7 @@ export default function Inventory() {
                       step="1"
                       placeholder="0"
                       {...form.register("stock", { 
-                        valueAsNumber: true,
-                        setValueAs: (value) => Math.floor(Number(value))
+                        valueAsNumber: true
                       })}
                     />
                     {form.formState.errors.stock && (
