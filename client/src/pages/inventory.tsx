@@ -25,6 +25,9 @@ import { Loader2, Plus, Search } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
+import { LowStockAlert } from "@/components/inventory-dashboard/low-stock-alert";
+import { StockDistribution } from "@/components/inventory-dashboard/stock-distribution";
+import { InventoryValue } from "@/components/inventory-dashboard/inventory-value";
 
 export default function Inventory() {
   const [search, setSearch] = useState("");
@@ -58,10 +61,10 @@ export default function Inventory() {
       setIsDialogOpen(false);
     },
     onError: (error: Error) => {
-      toast({ 
-        title: "Failed to create product", 
+      toast({
+        title: "Failed to create product",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     },
   });
@@ -96,7 +99,9 @@ export default function Inventory() {
                   <DialogTitle>Add New Product</DialogTitle>
                 </DialogHeader>
                 <form
-                  onSubmit={form.handleSubmit((data) => createMutation.mutate(data))}
+                  onSubmit={form.handleSubmit((data) =>
+                    createMutation.mutate(data)
+                  )}
                   className="space-y-4"
                 >
                   <div className="space-y-2">
@@ -190,6 +195,12 @@ export default function Inventory() {
             </Dialog>
           </div>
 
+          <div className="grid gap-4 md:grid-cols-4">
+            <InventoryValue products={products} />
+            <LowStockAlert products={products} />
+            <StockDistribution products={products} />
+          </div>
+
           <div className="flex items-center gap-2">
             <Search className="h-4 w-4 text-muted-foreground" />
             <Input
@@ -227,7 +238,10 @@ export default function Inventory() {
                 ))}
                 {filteredProducts.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    <TableCell
+                      colSpan={5}
+                      className="text-center text-muted-foreground"
+                    >
                       No products found
                     </TableCell>
                   </TableRow>
