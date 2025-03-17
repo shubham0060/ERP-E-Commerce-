@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Product } from "@shared/schema";
-import { DollarSign } from "lucide-react";
+// Assuming IndianRupee is available.  If not, you'll need to import or define it.
+import { IndianRupee } from "lucide-react"; // Or wherever it's defined
 
 type Props = {
   products: Product[];
@@ -19,7 +20,7 @@ export function InventoryValue({ products }: Props) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <DollarSign className="h-5 w-5" />
+          <IndianRupee className="h-5 w-5" />
           Total Inventory Value
         </CardTitle>
       </CardHeader>
