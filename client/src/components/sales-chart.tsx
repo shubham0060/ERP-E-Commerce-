@@ -34,7 +34,7 @@ export function SalesChart() {
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={salesData}>
             <XAxis dataKey="date" />
-            <YAxis />
+            <YAxis tickFormatter={(value) => `₹${value}`} />
             <Tooltip />
             <Line type="monotone" dataKey="total" stroke="#8884d8" />
           </LineChart>

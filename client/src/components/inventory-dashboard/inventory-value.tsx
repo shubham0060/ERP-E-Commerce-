@@ -27,7 +27,7 @@ export function InventoryValue({ products }: Props) {
         <div className="space-y-4">
           <div>
             <p className="text-3xl font-bold">
-              ${totalValue.toLocaleString(undefined, {
+              ₹{totalValue.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -44,7 +44,7 @@ export function InventoryValue({ products }: Props) {
             <div className="rounded-lg border p-3">
               <p className="text-sm font-medium">Avg. Value/Item</p>
               <p className="text-2xl font-bold">
-                $
+                ₹
                 {(totalValue / totalItems).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,

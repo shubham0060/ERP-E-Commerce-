@@ -53,7 +53,7 @@ export function StatsCards() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
         title="Total Revenue"
-        value={`$${totalRevenue.toFixed(2)}`}
+        value={`₹${totalRevenue.toFixed(2)}`}
         description={`${weeklyOrders.length} orders this week`}
         icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
       />
