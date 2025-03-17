@@ -169,7 +169,7 @@ export default function Orders() {
                     <TableCell>#{order.id}</TableCell>
                     <TableCell>{order.customerId}</TableCell>
                     <TableCell>{order.status}</TableCell>
-                    <TableCell>${order.total}</TableCell>
+                    <TableCell>₹{order.total}</TableCell>
                     <TableCell>
                       {format(new Date(order.createdAt), "MMM d, yyyy")}
                     </TableCell>
