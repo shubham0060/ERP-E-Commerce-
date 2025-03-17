@@ -1,6 +1,7 @@
 import session from "express-session";
 import createMemoryStore from "memorystore";
-import { User, Customer, Product, Order, OrderItem, InsertUser, InsertCustomer, InsertProduct, InsertOrder, InsertOrderItem } from "@shared/schema";
+import { type User, type Customer, type Product, type Order, type OrderItem } from "@shared/schema";
+import { Blockchain } from "@shared/blockchain";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -9,32 +10,34 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Customer operations
   getCustomers(): Promise<Customer[]>;
   getCustomer(id: number): Promise<Customer | undefined>;
   createCustomer(customer: InsertCustomer): Promise<Customer>;
   updateCustomer(id: number, customer: Partial<Customer>): Promise<Customer>;
   deleteCustomer(id: number): Promise<void>;
-  
+
   // Product operations
   getProducts(): Promise<Product[]>;
   getProduct(id: number): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: number, product: Partial<Product>): Promise<Product>;
   deleteProduct(id: number): Promise<void>;
-  
+
   // Order operations
   getOrders(): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: number, order: Partial<Order>): Promise<Order>;
-  
+
   // Order items operations
   getOrderItems(orderId: number): Promise<OrderItem[]>;
   createOrderItem(item: InsertOrderItem): Promise<OrderItem>;
-  
+
   sessionStore: session.Store;
+  getBlockchain(): any[];
+  verifyBlockchain(): boolean;
 }
 
 export class MemStorage implements IStorage {
@@ -44,6 +47,7 @@ export class MemStorage implements IStorage {
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
   private currentId: number;
+  private blockchain: Blockchain;
   sessionStore: session.Store;
 
   constructor() {
@@ -53,6 +57,7 @@ export class MemStorage implements IStorage {
     this.orders = new Map();
     this.orderItems = new Map();
     this.currentId = 1;
+    this.blockchain = new Blockchain();
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
@@ -141,11 +146,24 @@ export class MemStorage implements IStorage {
     return this.orders.get(id);
   }
 
-  async createOrder(order: InsertOrder): Promise<Order> {
-    const id = this.currentId++;
-    const newOrder = { ...order, id, createdAt: new Date() };
-    this.orders.set(id, newOrder);
-    return newOrder;
+  async createOrder(data: InsertOrder): Promise<Order> {
+    const id = this.orders.size + 1;
+    const order: Order = {
+      ...data,
+      id,
+      createdAt: new Date(),
+    };
+    this.orders.set(id, order);
+
+    // Add order to blockchain
+    this.blockchain.addBlock({
+      type: 'ORDER_CREATED',
+      orderId: id,
+      data: order,
+      timestamp: new Date()
+    });
+
+    return order;
   }
 
   async updateOrder(id: number, order: Partial<Order>): Promise<Order> {
@@ -168,6 +186,14 @@ export class MemStorage implements IStorage {
     const newItem = { ...item, id };
     this.orderItems.set(id, newItem);
     return newItem;
+  }
+
+  getBlockchain() {
+    return this.blockchain.getChain();
+  }
+
+  verifyBlockchain() {
+    return this.blockchain.isValid();
   }
 }
 

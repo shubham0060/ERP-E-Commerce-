@@ -80,6 +80,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(items);
   });
 
+  app.get("/api/blockchain", async (req, res) => {
+    const chain = storage.getBlockchain();
+    res.json(chain);
+  });
+
+  app.get("/api/blockchain/verify", async (req, res) => {
+    const isValid = storage.verifyBlockchain();
+    res.json({ isValid });
+  });
+
   app.post("/api/orders/:id/items", async (req, res) => {
     const orderId = z.coerce.number().parse(req.params.id);
     const data = insertOrderItemSchema.parse({ ...req.body, orderId });
