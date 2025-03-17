@@ -8,6 +8,7 @@ import {
   Users,
   ShoppingCart,
   LogOut,
+  Link as LinkIcon,
 } from "lucide-react";
 
 const navItems = [
@@ -30,6 +31,11 @@ const navItems = [
     title: "Orders",
     href: "/orders",
     icon: ShoppingCart,
+  },
+  {
+    title: "Blockchain",
+    href: "/blockchain",
+    icon: LinkIcon,
   },
 ];
 
