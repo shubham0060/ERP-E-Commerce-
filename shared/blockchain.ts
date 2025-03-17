@@ -1,4 +1,6 @@
 
+import crypto from 'crypto';
+
 interface Block {
   timestamp: number;
   data: any;
@@ -27,7 +29,6 @@ export class Blockchain {
   }
 
   private calculateHash(timestamp: number, data: any, previousHash: string, nonce: number): string {
-    const crypto = require('crypto');
     return crypto
       .createHash('sha256')
       .update(timestamp + JSON.stringify(data) + previousHash + nonce)
