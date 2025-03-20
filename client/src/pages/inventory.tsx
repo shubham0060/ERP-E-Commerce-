@@ -232,7 +232,7 @@ export default function Inventory() {
                     <TableCell>{product.name}</TableCell>
                     <TableCell>{product.sku}</TableCell>
                     <TableCell>{product.description}</TableCell>
-                    <TableCell>${product.price}</TableCell>
+                    <TableCell>₹{product.price}</TableCell>
                     <TableCell>{product.stock}</TableCell>
                   </TableRow>
                 ))}
